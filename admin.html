@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel - Prime Arena</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      background: #0a0e27;
+      color: white;
+      font-family: 'Arial', sans-serif;
+      min-height: 100vh;
+    }
+    
+    .login-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .admin-logo {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, #ff6b00, #ffa500);
+      border-radius: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 45px;
+      margin-bottom: 25px;
+      box-shadow: 0 0 30px rgba(255, 165, 0, 0.5);
+    }
+    
+    .admin-title {
+      font-size: 26px;
+      font-weight: bold;
+      color: #ffa500;
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+    }
+    
+    .admin-subtitle {
+      font-size: 13px;
+      color: #ccc;
+      margin-bottom: 40px;
+    }
+    
+    .login-box {
+      width: 100%;
+      max-width: 400px;
+      background: #1a1f3a;
+      border-radius: 15px;
+      padding: 25px;
+      border: 1px solid #ffa500;
+    }
+    
+    .input-group { margin-bottom: 18px; }
+    
+    .input-group label {
+      display: block;
+      font-size: 12px;
+      color: #ccc;
+      margin-bottom: 8px;
+    }
+    
+    .input-group input {
+      width: 100%;
+      padding: 14px;
+      background: #0a0e27;
+      border: 1px solid #2a2f4a;
+      border-radius: 10px;
+      color: white;
+      font-size: 15px;
+      outline: none;
+    }
+    
+    .input-group input:focus { border-color: #ffa500; }
+    
+    .login-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #ff6b00, #ffa500);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      letter-spacing: 1px;
+      margin-top: 10px;
+    }
+    
+    .login-btn:active { opacity: 0.9; }
+    
+    .error-msg {
+      color: #ff3131;
+      font-size: 12px;
+      text-align: center;
+      margin-top: 12px;
+      display: none;
+    }
+    
+    .dashboard {
+      display: none;
+      padding-bottom: 80px;
+    }
+    
+    .admin-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: #0d1230;
+      border-bottom: 1px solid #2a2f4a;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .admin-topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .admin-badge {
+      background: linear-gradient(135deg, #ff6b00, #ffa500);
+      color: white;
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-weight: bold;
+    }
+    
+    .admin-topbar-title { font-size: 16px; font-weight: bold; }
+    
+    .logout-small {
+      background: #ff3131;
+      border: none;
+      color: white;
+      font-size: 11px;
+      padding: 8px 15px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 15px;
+    }
+    
+    .stat-card {
+      background: #1a1f3a;
+      border-radius: 12px;
+      padding: 15px;
+      border: 1px solid #2a2f4a;
+    }
+    
+    .stat-icon { font-size: 24px; margin-bottom: 8px; }
+    .stat-value { font-size: 24px; font-weight: bold; color: #ffa500; margin-bottom: 4px; }
+    .stat-label { font-size: 11px; color: #ccc; }
+    
+    .section-head {
+      padding: 15px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #ffa500;
+    }
+    
+    .action-list { padding: 0 15px; }
+    
+    .action-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #1a1f3a;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border: 1px solid #2a2f4a;
+    }
+    
+    .action-item:active { background: #2a2f4a; }
+    
+    .action-left { display: flex; align-items: center; gap: 15px; }
+    .action-icon { font-size: 22px; width: 25px; text-align: center; }
+    .action-text { font-size: 14px; color: white; font-weight: 500; }
+    .action-arrow { font-size: 18px; color: #666; }
+    
+    .badge-count {
+      background: #ff3131;
+      color: white;
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+    
+    /* ===== STANDARD BOTTOM NAVIGATION ===== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #0d1230;
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      border-top: 1px solid #2a2f4a;
+      z-index: 100;
+    }
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+      color: #666;
+      font-size: 9px;
+      padding: 5px 8px;
+      flex: 1;
+    }
+    
+    .nav-item.active { color: #ffa500; }
+    .nav-icon { font-size: 20px; }
+  </style>
+</head>
+<body>
+  <!-- LOGIN SCREEN -->
+  <div class="login-container" id="loginScreen">
+    <div class="admin-logo">🔐</div>
+    <div class="admin-title">PRIME ARENA</div>
+    <div class="admin-subtitle">ADMIN PANEL</div>
+    
+    <div class="login-box">
+      <div class="input-group">
+        <label>ADMIN EMAIL</label>
+        <input type="email" id="adminEmail" placeholder="Enter admin email">
+      </div>
+      
+      <div class="input-group">
+        <label>SECRET PASSWORD</label>
+        <input type="password" id="adminPassword" placeholder="Enter password">
+      </div>
+      
+      <button class="login-btn" onclick="adminLogin()">ACCESS DASHBOARD →</button>
+      
+      <div class="error-msg" id="loginError">Invalid email or password!</div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="dashboard" id="dashboardScreen">
+    <div class="admin-topbar">
+      <div class="admin-topbar-left">
+        <span class="admin-badge">ADMIN</span>
+        <span class="admin-topbar-title">Dashboard</span>
+      </div>
+      <button class="logout-small" onclick="adminLogout()">Logout</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value" id="totalUsers">0</div>
+        <div class="stat-label">Total Users</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-value" id="totalRevenue">₹0</div>
+        <div class="stat-label">Total Revenue</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🎮</div>
+        <div class="stat-value" id="activeMatches">0</div>
+        <div class="stat-label">Active Matches</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-value" id="pendingDeposits">0</div>
+        <div class="stat-label">Pending Deposits</div>
+      </div>
+    </div>
+
+    <div class="section-head">⚡ QUICK ACTIONS</div>
+    
+    <div class="action-list">
+      <div class="action-item" onclick="window.location.href='admin-deposits.html'">
+        <div class="action-left">
+          <span class="action-icon">💳</span>
+          <span class="action-text">Deposit Management</span>
+        </div>
+        <div style="display:flex; align-items:center;">
+          <span class="badge-count">0</span>
+          <span class="action-arrow">›</span>
+        </div>
+      </div>
+
+      <div class="action-item" onclick="window.location.href='admin-withdrawals.html'">
+        <div class="action-left">
+          <span class="action-icon">💸</span>
+          <span class="action-text">Withdrawal Management</span>
+        </div>
+        <div style="display:flex; align-items:center;">
+          <span class="badge-count">0</span>
+          <span class="action-arrow">›</span>
+        </div>
+      </div>
+
+      <div class="action-item" onclick="window.location.href='admin-users.html'">
+        <div class="action-left">
+          <span class="action-icon">👥</span>
+          <span class="action-text">User Management</span>
+        </div>
+        <span class="action-arrow">›</span>
+      </div>
+
+      <div class="action-item" onclick="window.location.href='admin-tournaments.html'">
+        <div class="action-left">
+          <span class="action-icon">🎮</span>
+          <span class="action-text">Tournament Manager</span>
+        </div>
+        <span class="action-arrow">›</span>
+      </div>
+
+      <div class="action-item" onclick="window.location.href='admin-result.html'">
+        <div class="action-left">
+          <span class="action-icon">🏆</span>
+          <span class="action-text">Result Upload</span>
+        </div>
+        <span class="action-arrow">›</span>
+      </div>
+
+      <div class="action-item" onclick="window.location.href='admin-settings.html'">
+        <div class="action-left">
+          <span class="action-icon">📝</span>
+          <span class="action-text">Content Manager</span>
+        </div>
+        <span class="action-arrow">›</span>
+      </div>
+
+      <div class="action-item" onclick="window.location.href='admin-settings.html'">
+        <div class="action-left">
+          <span class="action-icon">🔔</span>
+          <span class="action-text">Notification Panel</span>
+        </div>
+        <span class="action-arrow">›</span>
+      </div>
+
+      <div class="action-item" onclick="window.location.href='admin-settings.html'">
+        <div class="action-left">
+          <span class="action-icon">⚙️</span>
+          <span class="action-text">Settings</span>
+        </div>
+        <span class="action-arrow">›</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STANDARD BOTTOM NAVIGATION ===== -->
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="window.location.href='admin.html'">
+      <span class="nav-icon">🏠</span>
+      <span>Dashboard</span>
+    </div>
+    <div class="nav-item" onclick="window.location.href='admin-users.html'">
+      <span class="nav-icon">👥</span>
+      <span>Users</span>
+    </div>
+    <div class="nav-item" onclick="window.location.href='admin-deposits.html'">
+      <span class="nav-icon">💳</span>
+      <span>Deposits</span>
+    </div>
+    <div class="nav-item" onclick="window.location.href='admin-withdrawals.html'">
+      <span class="nav-icon">💸</span>
+      <span>Withdrawals</span>
+    </div>
+    <div class="nav-item" onclick="window.location.href='admin-settings.html'">
+      <span class="nav-icon">⚙️</span>
+      <span>Settings</span>
+    </div>
+  </div>
+
+  <script>
+    var ADMIN_EMAIL = "admin@primearena.com";
+    var ADMIN_PASSWORD = "PrimeArena@2026";
+    
+    function adminLogin() {
+      var email = document.getElementById('adminEmail').value.trim();
+      var password = document.getElementById('adminPassword').value;
+      
+      if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('dashboardScreen').style.display = 'block';
+        document.querySelector('.bottom-nav').style.display = 'flex';
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+      }
+    }
+    
+    function adminLogout() {
+      if (confirm('Are you sure you want to logout?')) {
+        document.getElementById('dashboardScreen').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('adminEmail').value = '';
+        document.getElementById('adminPassword').value = '';
+        document.getElementById('loginError').style.display = 'none';
+        document.querySelector('.bottom-nav').style.display = 'none';
+      }
+    }
+    
+    // Hide bottom nav on login screen initially
+    document.querySelector('.bottom-nav').style.display = 'none';
+    
+    function loadDashboardData() {
+      document.getElementById('totalUsers').textContent = '0';
+      document.getElementById('totalRevenue').textContent = '₹0';
+      document.getElementById('activeMatches').textContent = '0';
+      document.getElementById('pendingDeposits').textContent = '0';
+    }
+    
+    loadDashboardData();
+  </script>
+</body>
+</html>
